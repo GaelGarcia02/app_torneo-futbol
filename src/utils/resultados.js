@@ -43,7 +43,7 @@ const resultados = [
     hora: "18:00",
     equipos: "Perú vs Argentina",
     estadio: "Estadio Este",
-    resultado: "1 - 2",
+    resultado: "2 - 1",
   },
   {
     dia: "Viernes 19 de julio",

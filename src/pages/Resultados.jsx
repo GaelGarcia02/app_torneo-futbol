@@ -74,7 +74,7 @@ const Resultados = () => {
             type="date"
             value={fechaFiltro}
             onChange={(e) => setFechaFiltro(e.target.value)}
-            className="border px-3 py-2 rounded w-full md:w-1/3"
+            className="border px-3 py-2 rounded w-full md:w-1/3 lg:hidden"
           />
           <input
             type="text"
@@ -99,7 +99,7 @@ const Resultados = () => {
 
         {partidosFiltrados.length === 0 ? (
           <p className="text-center text-gray-500">
-            No hay resultados disponibles para esta búsqueda.
+            No hay resultados disponibles.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
