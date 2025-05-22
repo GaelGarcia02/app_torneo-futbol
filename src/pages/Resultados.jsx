@@ -1,6 +1,6 @@
 // pages/Resultados.jsx
 import React, { useState } from "react";
-import partidosData from "../utils/partidos";
+import resultadosData from "../utils/resultados";
 
 const Resultados = () => {
   const [fechaFiltro, setFechaFiltro] = useState("");
@@ -8,9 +8,24 @@ const Resultados = () => {
   const [estadioFiltro, setEstadioFiltro] = useState("");
 
   const obtenerFechaNormalizada = (diaTexto) => {
-    const partes = diaTexto.split(" ");
+    const partes = diaTexto.toLowerCase().split(" ");
     const dia = parseInt(partes[1], 10);
-    const mesTexto = partes[3].toLowerCase();
+    const mesTexto = partes.find((parte) =>
+      [
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+      ].includes(parte)
+    );
 
     const meses = {
       enero: "01",
@@ -33,9 +48,9 @@ const Resultados = () => {
     return `2025-${mes}-${diaFormateado}`;
   };
 
-  const estadiosUnicos = [...new Set(partidosData.map((p) => p.estadio))];
+  const estadiosUnicos = [...new Set(resultadosData.map((p) => p.estadio))];
 
-  const partidosFiltrados = partidosData.filter((partido) => {
+  const partidosFiltrados = resultadosData.filter((partido) => {
     const fechaNormalizada = obtenerFechaNormalizada(partido.dia);
     const coincideFecha = fechaFiltro ? fechaNormalizada === fechaFiltro : true;
     const coincideEquipo = equipoFiltro
@@ -44,19 +59,17 @@ const Resultados = () => {
     const coincideEstadio = estadioFiltro
       ? partido.estadio === estadioFiltro
       : true;
-    return (
-      coincideFecha && coincideEquipo && coincideEstadio && partido.resultado
-    );
+    return coincideFecha && coincideEquipo && coincideEstadio;
   });
 
   return (
     <main className="flex justify-center items-center">
-      <div className="bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg max-w-5xl w-full">
+      <div className="bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg max-w-7xl w-full">
         <h2 className="text-green-700 text-2xl font-semibold mb-6 text-center">
           📊 Resultados de Partidos
         </h2>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-6 justify-center">
+        <div className="flex flex-col md:flex-row gap-4 mb-4 justify-center">
           <input
             type="date"
             value={fechaFiltro}
@@ -65,7 +78,7 @@ const Resultados = () => {
           />
           <input
             type="text"
-            placeholder="Filtrar por equipo (Ej. Brasil)"
+            placeholder="Filtrar por equipo (Ej. México)"
             value={equipoFiltro}
             onChange={(e) => setEquipoFiltro(e.target.value)}
             className="border px-3 py-2 rounded w-full md:w-1/3"
@@ -89,7 +102,7 @@ const Resultados = () => {
             No hay resultados disponibles para esta búsqueda.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {partidosFiltrados.map((partido, index) => (
               <div
                 key={index}
@@ -103,9 +116,11 @@ const Resultados = () => {
                 </h3>
                 <p className="text-gray-700">⏰ {partido.hora}</p>
                 <p className="text-gray-700">📍 {partido.estadio}</p>
-                <p className="text-black font-semibold mt-2">
-                  Resultado: {partido.resultado}
-                </p>
+                {partido.resultado && (
+                  <p className="text-black font-semibold mt-2">
+                    Resultado: {partido.resultado}
+                  </p>
+                )}
               </div>
             ))}
           </div>
