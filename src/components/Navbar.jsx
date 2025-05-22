@@ -1,0 +1,53 @@
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { CalendarDays, Trophy, Ticket, Info } from "lucide-react";
+
+const Navbar = () => {
+  const location = useLocation();
+
+  const navItems = [
+    {
+      name: "Horarios",
+      path: "/",
+      icon: (is2xl) => <CalendarDays size={is2xl ? 28 : 20} />,
+    },
+    {
+      name: "Resultados",
+      path: "/resultados",
+      icon: (is2xl) => <Trophy size={is2xl ? 28 : 20} />,
+    },
+    {
+      name: "Reservaciones",
+      path: "/reservaciones",
+      icon: (is2xl) => <Ticket size={is2xl ? 28 : 20} />,
+    },
+    {
+      name: "Información",
+      path: "/informacion",
+      icon: (is2xl) => <Info size={is2xl ? 28 : 20} />,
+    },
+  ];
+
+  const is2xl = window.innerWidth >= 1536;
+
+  return (
+    <nav className="bg-blue-600 text-white shadow-md flex justify-around items-center py-2 px-4 fixed bottom-0 w-full z-50 md:static md:bottom-auto md:top-0">
+      {navItems.map((item) => (
+        <Link
+          key={item.name}
+          to={item.path}
+          className={`flex flex-col items-center text-xs px-3 py-1.5 rounded ${
+            location.pathname === item.path
+              ? "bg-white text-blue-600"
+              : "hover:bg-blue-700"
+          }`}
+        >
+          {item.icon(is2xl)}
+          <span>{item.name}</span>
+        </Link>
+      ))}
+    </nav>
+  );
+};
+
+export default Navbar;
