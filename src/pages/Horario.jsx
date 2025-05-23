@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import partidosData from "../utils/partidos";
+import resultadosData from "../utils/resultados";
 
 const Horario = () => {
   const [fechaFiltro, setFechaFiltro] = useState("");
@@ -63,6 +64,20 @@ const Horario = () => {
     return coincideFecha && coincideEquipo && coincideEstadio;
   });
 
+  const resultadosFiltrados = resultadosData.filter((resultado) => {
+    const fechaNormalizada = obtenerFechaNormalizada(resultado.dia);
+    const coincideFecha = fechaFiltro ? fechaNormalizada === fechaFiltro : true;
+    const coincideEquipo = equipoFiltro
+      ? partido.equipos.toLowerCase().includes(equipoFiltro.toLowerCase())
+      : true;
+    const coincideEstadio = estadioFiltro
+      ? resultado.estadio === estadioFiltro
+      : true;
+    return coincideFecha && coincideEquipo && coincideEstadio;
+  });
+
+  const enJuego = resultadosFiltrados.filter((p) => p.estado === "jugando");
+
   return (
     <main className="flex justify-center items-center">
       <div className="bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg max-w-5xl w-full">
@@ -105,35 +120,70 @@ const Horario = () => {
             No hay partidos programados.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {partidosFiltrados.map((partido, index) => (
-              <div
-                key={index}
-                className="border rounded-xl shadow-xl p-6 bg-white text-center relative"
-              >
-                <p className="text-md text-gray-500 font-medium mb-1">
-                  {partido.dia}
-                </p>
-                <h3 className="text-xl font-bold text-blue-700 mb-2">
-                  {partido.equipos}
-                </h3>
-                <p className="text-gray-700">⏰ {partido.hora}</p>
-                <p className="text-gray-700 mb-2">📍 {partido.estadio}</p>
-
-                <button
-                  onClick={() => toggleNotificacion(partido.id)}
-                  className={`px-3 py-1 text-sm rounded-full lg:hidden ${
-                    notificaciones[partido.id]
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
+          <div>
+            <div className="flex xs:hidden">
+              {enJuego.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-red-600 mb-4 text-center">
+                    🔴 Jugando ahora mismo
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {enJuego.map((partido, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-xl shadow-xl p-6 bg-white text-center"
+                      >
+                        <h3 className="text-xl font-bold text-red-600 mb-2">
+                          {partido.equipos}
+                        </h3>
+                        <p className="text-black font-semibold text-lg mt-2">
+                          Marcador en vivo: <br />
+                          {partido.marcador}
+                        </p>
+                        <p className="text-gray-700">📍 {partido.estadio}</p>
+                        <p className="text-red-500 mt-2 font-semibold">
+                          En juego
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* // */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <h3 className="xs:hidden text-xl font-bold text-blue-600 mt-4 text-center">
+                📢 Partidos por Jugar
+              </h3>
+              {partidosFiltrados.map((partido, index) => (
+                <div
+                  key={index}
+                  className="border rounded-xl shadow-xl p-6 bg-white text-center relative"
                 >
-                  {notificaciones[partido.id]
-                    ? "🔔 Recordatorio activado"
-                    : "🔕 Activar recordatorio"}
-                </button>
-              </div>
-            ))}
+                  <p className="text-md text-gray-500 font-medium mb-1">
+                    {partido.dia}
+                  </p>
+                  <h3 className="text-xl font-bold text-blue-700 mb-2">
+                    {partido.equipos}
+                  </h3>
+                  <p className="text-gray-700">⏰ {partido.hora}</p>
+                  <p className="text-gray-700 mb-2">📍 {partido.estadio}</p>
+
+                  <button
+                    onClick={() => toggleNotificacion(partido.id)}
+                    className={`px-3 py-1 text-sm rounded-full lg:hidden ${
+                      notificaciones[partido.id]
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {notificaciones[partido.id]
+                      ? "🔔 Recordatorio activado"
+                      : "🔕 Activar recordatorio"}
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
