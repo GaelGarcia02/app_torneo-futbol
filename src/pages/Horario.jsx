@@ -7,7 +7,6 @@ const Horario = () => {
   const [estadioFiltro, setEstadioFiltro] = useState("");
   const [notificaciones, setNotificaciones] = useState({});
 
-  // Normaliza la fecha del texto "Día 10 de mayo" => "2025-05-10"
   const obtenerFechaNormalizada = (diaTexto) => {
     const partes = diaTexto.split(" ");
     const dia = parseInt(partes[1], 10);

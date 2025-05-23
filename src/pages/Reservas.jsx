@@ -121,11 +121,17 @@ const Reservas = () => {
         );
         setSeleccionados([]);
 
-        Swal.fire(
-          "¡Reservado!",
-          "Tus asientos han sido confirmados.",
-          "success"
-        );
+        Swal.fire({
+          title: "Reserva confirmada",
+          html: `
+          <p>Escanea este código QR al llegar al estadio:</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?data=RESERVA-${partidoSeleccionado.id}&size=200x200" alt="QR" class="mx-auto mt-4" />
+          <p class="mt-2 text-sm text-gray-500">Puedes tomarle una captura de pantalla.</p>
+        `,
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar",
+          width: 300,
+        });
       }
     });
   };
@@ -178,7 +184,6 @@ const Reservas = () => {
               ))}
             </select>
           </div>
-
           <div className="space-y-4">
             {partidosFiltrados.map((partido) => (
               <button
@@ -199,7 +204,7 @@ const Reservas = () => {
         <div>
           <button
             onClick={() => setPartidoSeleccionado(null)}
-            className="mb-4 text-blue-600 underline"
+            className="mb-6 bg-white text-green-700 border border-green-500 px-4 py-2 rounded-md shadow hover:bg-green-50 transition-all"
           >
             ← Volver a partidos
           </button>
@@ -207,6 +212,9 @@ const Reservas = () => {
           <h3 className="text-lg font-bold mb-2">
             {partidoSeleccionado.equipos} - {partidoSeleccionado.dia}
           </h3>
+          <p className="text-sm text-gray-800 mb-6 text-center">
+            - Seleccione los asientos que desea reservar -
+          </p>
 
           <div className="grid gap-2 my-4">
             {asientosPorPartido[partidoSeleccionado.id]?.map(
@@ -239,13 +247,15 @@ const Reservas = () => {
             )}
           </div>
 
-          <button
-            onClick={confirmarReserva}
-            disabled={seleccionados.length === 0}
-            className="bg-green-600 text-white px-4 py-2 rounded mt-4"
-          >
-            Confirmar Reserva
-          </button>
+          <div className="text-center">
+            <button
+              onClick={confirmarReserva}
+              disabled={seleccionados.length === 0}
+              className="bg-green-600 text-white px-4 py-2 rounded mt-4"
+            >
+              Confirmar Reserva
+            </button>
+          </div>
         </div>
       )}
     </main>
