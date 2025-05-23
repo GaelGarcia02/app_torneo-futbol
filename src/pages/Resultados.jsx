@@ -1,4 +1,3 @@
-// pages/Resultados.jsx
 import React, { useState } from "react";
 import resultadosData from "../utils/resultados";
 
@@ -62,6 +61,9 @@ const Resultados = () => {
     return coincideFecha && coincideEquipo && coincideEstadio;
   });
 
+  const enJuego = partidosFiltrados.filter((p) => p.estado === "jugando");
+  const finalizados = partidosFiltrados.filter((p) => p.estado !== "jugando");
+
   return (
     <main className="flex justify-center items-center">
       <div className="bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg max-w-7xl w-full">
@@ -97,13 +99,42 @@ const Resultados = () => {
           </select>
         </div>
 
-        {partidosFiltrados.length === 0 ? (
+        {enJuego.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-xl font-bold text-red-600 mb-4 text-center">
+              🔴 Jugando ahora mismo
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enJuego.map((partido, index) => (
+                <div
+                  key={index}
+                  className="border rounded-xl shadow-xl p-6 bg-white text-center"
+                >
+                  <h3 className="text-xl font-bold text-red-600 mb-2">
+                    {partido.equipos}
+                  </h3>
+                  <p className="text-black font-semibold text-lg mt-2">
+                    Marcador en vivo: <br />
+                    {partido.marcador}
+                  </p>
+                  <p className="text-gray-700">📍 {partido.estadio}</p>
+                  <p className="text-red-500 mt-2 font-semibold">En juego</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <h3 className="text-xl font-bold text-green-600 mb-4 text-center">
+          ✅ Partidos finalizados
+        </h3>
+        {finalizados.length === 0 ? (
           <p className="text-center text-gray-500">
             No hay resultados disponibles.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {partidosFiltrados.map((partido, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {finalizados.map((partido, index) => (
               <div
                 key={index}
                 className="border rounded-xl shadow-xl p-6 bg-white text-center"

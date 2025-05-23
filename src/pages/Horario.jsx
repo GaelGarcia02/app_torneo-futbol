@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import partidosData from "../utils/partidos";
 
 const Horario = () => {
   const [fechaFiltro, setFechaFiltro] = useState("");
   const [equipoFiltro, setEquipoFiltro] = useState("");
   const [estadioFiltro, setEstadioFiltro] = useState("");
+  const [notificaciones, setNotificaciones] = useState({});
 
+  // Normaliza la fecha del texto "Día 10 de mayo" => "2025-05-10"
   const obtenerFechaNormalizada = (diaTexto) => {
     const partes = diaTexto.split(" ");
     const dia = parseInt(partes[1], 10);
@@ -28,8 +30,24 @@ const Horario = () => {
 
     const mes = meses[mesTexto];
     const diaFormateado = dia < 10 ? `0${dia}` : `${dia}`;
-
     return `2025-${mes}-${diaFormateado}`;
+  };
+
+  // Cargar notificaciones desde localStorage al montar
+  useEffect(() => {
+    const guardadas = localStorage.getItem("notificacionesPartidos");
+    if (guardadas) {
+      setNotificaciones(JSON.parse(guardadas));
+    }
+  }, []);
+
+  const toggleNotificacion = (id) => {
+    const actualizado = {
+      ...notificaciones,
+      [id]: !notificaciones[id],
+    };
+    setNotificaciones(actualizado);
+    localStorage.setItem("notificacionesPartidos", JSON.stringify(actualizado));
   };
 
   const estadiosUnicos = [...new Set(partidosData.map((p) => p.estadio))];
@@ -53,6 +71,7 @@ const Horario = () => {
           🕒 Horario de Partidos
         </h2>
 
+        {/* Filtros */}
         <div className="flex flex-col md:flex-row gap-4 mb-6 justify-center">
           <input
             type="date"
@@ -72,7 +91,7 @@ const Horario = () => {
             onChange={(e) => setEstadioFiltro(e.target.value)}
             className="border px-3 py-2 rounded w-full md:w-1/3"
           >
-            <option value="">Todos los campos</option>
+            <option value="">Todos los estadios</option>
             {estadiosUnicos.map((estadio, idx) => (
               <option key={idx} value={estadio}>
                 {estadio}
@@ -81,6 +100,7 @@ const Horario = () => {
           </select>
         </div>
 
+        {/* Lista de partidos */}
         {partidosFiltrados.length === 0 ? (
           <p className="text-center text-gray-500">
             No hay partidos programados.
@@ -90,7 +110,7 @@ const Horario = () => {
             {partidosFiltrados.map((partido, index) => (
               <div
                 key={index}
-                className="border rounded-xl shadow-xl p-6 bg-white text-center"
+                className="border rounded-xl shadow-xl p-6 bg-white text-center relative"
               >
                 <p className="text-md text-gray-500 font-medium mb-1">
                   {partido.dia}
@@ -99,7 +119,20 @@ const Horario = () => {
                   {partido.equipos}
                 </h3>
                 <p className="text-gray-700">⏰ {partido.hora}</p>
-                <p className="text-gray-700">📍 {partido.estadio}</p>
+                <p className="text-gray-700 mb-2">📍 {partido.estadio}</p>
+
+                <button
+                  onClick={() => toggleNotificacion(partido.id)}
+                  className={`px-3 py-1 text-sm rounded-full lg:hidden ${
+                    notificaciones[partido.id]
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {notificaciones[partido.id]
+                    ? "🔔 Recordatorio activado"
+                    : "🔕 Activar recordatorio"}
+                </button>
               </div>
             ))}
           </div>
