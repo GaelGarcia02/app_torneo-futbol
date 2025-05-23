@@ -68,7 +68,7 @@ const Horario = () => {
     const fechaNormalizada = obtenerFechaNormalizada(resultado.dia);
     const coincideFecha = fechaFiltro ? fechaNormalizada === fechaFiltro : true;
     const coincideEquipo = equipoFiltro
-      ? partido.equipos.toLowerCase().includes(equipoFiltro.toLowerCase())
+      ? resultado.equipos.toLowerCase().includes(equipoFiltro.toLowerCase())
       : true;
     const coincideEstadio = estadioFiltro
       ? resultado.estadio === estadioFiltro
@@ -121,7 +121,7 @@ const Horario = () => {
           </p>
         ) : (
           <div>
-            <div className="flex xs:hidden">
+            <div className="">
               {enJuego.length > 0 && (
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-red-600 mb-4 text-center">
@@ -151,10 +151,10 @@ const Horario = () => {
               )}
             </div>
             {/* // */}
+            <h3 className=" text-xl font-bold text-blue-600 mb-4 text-center">
+              📢 Partidos por Jugar
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <h3 className="xs:hidden text-xl font-bold text-blue-600 mt-4 text-center">
-                📢 Partidos por Jugar
-              </h3>
               {partidosFiltrados.map((partido, index) => (
                 <div
                   key={index}
