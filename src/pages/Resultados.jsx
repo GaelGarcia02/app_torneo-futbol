@@ -88,7 +88,7 @@ const Resultados = () => {
             onChange={(e) => setEstadioFiltro(e.target.value)}
             className="border px-3 py-2 rounded w-full md:w-1/3"
           >
-            <option value="">Todos los estadios</option>
+            <option value="">Todos los campos</option>
             {estadiosUnicos.map((estadio, idx) => (
               <option key={idx} value={estadio}>
                 {estadio}
