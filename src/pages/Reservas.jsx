@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import partidosProximos from "../utils/partidos";
 import Swal from "sweetalert2";
+import partidosProximos from "../utils/partidos";
 
 const generarMapaAsientos = (filas = 5, columnas = 10) => {
   const mapa = [];
@@ -16,18 +16,33 @@ const generarMapaAsientos = (filas = 5, columnas = 10) => {
 
 const Reservas = () => {
   const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
-  const [mapasPorPartido, setMapasPorPartido] = useState(() => {
-    const inicial = {};
-    partidosProximos.forEach((p) => {
-      inicial[p.id] = generarMapaAsientos();
-    });
-    return inicial;
-  });
+  const [asientos, setAsientos] = useState([]);
   const [seleccionados, setSeleccionados] = useState([]);
 
+  // Leer desde localStorage por partido
+  const obtenerMapa = (id) => {
+    const guardado = localStorage.getItem("mapasPorPartido");
+    const mapas = guardado ? JSON.parse(guardado) : {};
+    return mapas[id] || generarMapaAsientos();
+  };
+
+  // Guardar en localStorage por partido
+  const guardarMapa = (id, nuevoMapa) => {
+    const guardado = localStorage.getItem("mapasPorPartido");
+    const mapas = guardado ? JSON.parse(guardado) : {};
+    mapas[id] = nuevoMapa;
+    localStorage.setItem("mapasPorPartido", JSON.stringify(mapas));
+  };
+
+  const seleccionarPartido = (partido) => {
+    const mapa = obtenerMapa(partido.id);
+    setPartidoSeleccionado(partido);
+    setAsientos(mapa);
+    setSeleccionados([]);
+  };
+
   const seleccionarAsiento = (filaIdx, asientoIdx) => {
-    const mapaActual = mapasPorPartido[partidoSeleccionado.id];
-    const asiento = mapaActual[filaIdx][asientoIdx];
+    const asiento = asientos[filaIdx][asientoIdx];
     if (asiento.reservado) return;
 
     const yaSeleccionado = seleccionados.find(
@@ -46,47 +61,30 @@ const Reservas = () => {
     setSeleccionados(nuevosSeleccionados);
   };
 
-  const confirmarReserva = async () => {
-    const asientosTexto = seleccionados
-      .map((s) => `Fila ${s.fila + 1} - Asiento ${s.asiento + 1}`)
+  const confirmarReserva = () => {
+    const nuevoMapa = asientos.map((fila) =>
+      fila.map((asiento) => {
+        const reservado = seleccionados.some(
+          (s) => s.fila === asiento.fila && s.asiento === asiento.asiento
+        );
+        return reservado ? { ...asiento, reservado: true } : asiento;
+      })
+    );
+
+    guardarMapa(partidoSeleccionado.id, nuevoMapa);
+    setAsientos(nuevoMapa);
+    setSeleccionados([]);
+
+    const asientosConfirmados = seleccionados
+      .map((a) => `${a.fila + 1}-${a.asiento + 1}`)
       .join(", ");
 
-    const resultado = await Swal.fire({
-      title: "¿Confirmar reserva?",
-      html: `
-      <p>Estás por reservar <strong>${seleccionados.length}</strong> asiento(s):</p>
-      <p>${asientosTexto}</p>
-    `,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Sí, reservar",
-      cancelButtonText: "Cancelar",
+    Swal.fire({
+      title: "✅ Reserva confirmada",
+      html: `Has reservado los asientos: <strong>${asientosConfirmados}</strong>`,
+      icon: "success",
+      confirmButtonText: "OK",
     });
-
-    if (resultado.isConfirmed) {
-      const mapaActual = mapasPorPartido[partidoSeleccionado.id];
-      const nuevoMapa = mapaActual.map((fila) =>
-        fila.map((asiento) => {
-          const reservado = seleccionados.some(
-            (s) => s.fila === asiento.fila && s.asiento === asiento.asiento
-          );
-          return reservado ? { ...asiento, reservado: true } : asiento;
-        })
-      );
-
-      setMapasPorPartido({
-        ...mapasPorPartido,
-        [partidoSeleccionado.id]: nuevoMapa,
-      });
-      setSeleccionados([]);
-
-      await Swal.fire({
-        title: "¡Reserva confirmada!",
-        html: `<p>Has reservado los siguientes asientos:</p><p>${asientosTexto}</p>`,
-        icon: "success",
-        confirmButtonText: "Aceptar",
-      });
-    }
   };
 
   return (
@@ -100,10 +98,7 @@ const Reservas = () => {
           {partidosProximos.map((partido) => (
             <button
               key={partido.id}
-              onClick={() => {
-                setPartidoSeleccionado(partido);
-                setSeleccionados([]);
-              }}
+              onClick={() => seleccionarPartido(partido)}
               className="block w-full border p-4 rounded bg-white hover:bg-gray-100 text-left"
             >
               <h3 className="text-lg font-semibold">{partido.equipos}</h3>
@@ -118,7 +113,7 @@ const Reservas = () => {
         <div>
           <button
             onClick={() => setPartidoSeleccionado(null)}
-            className="mb-4 text-blue-600 underline"
+            className="mb-6 bg-white text-green-700 border border-green-500 px-4 py-2 rounded-md shadow hover:bg-green-50 transition-all"
           >
             ← Volver a partidos
           </button>
@@ -128,7 +123,7 @@ const Reservas = () => {
           </h3>
 
           <div className="grid gap-2 my-4">
-            {mapasPorPartido[partidoSeleccionado.id].map((fila, filaIdx) => (
+            {asientos.map((fila, filaIdx) => (
               <div key={filaIdx} className="flex justify-center gap-1">
                 {fila.map((asiento, asientoIdx) => {
                   const esSeleccionado = seleccionados.some(
