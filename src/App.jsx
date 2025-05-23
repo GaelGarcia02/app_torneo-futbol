@@ -9,7 +9,7 @@ import Info from "./pages/info";
 const App = () => {
   return (
     <Router>
-      <header className="bg-blue-700 text-white p-4 text-center">
+      <header className="hidden xs:grid bg-blue-700 text-white p-4 text-center">
         <h1 className="text-xl md:text-3xl font-bold">
           Torneo Escolar de Fútbol
         </h1>

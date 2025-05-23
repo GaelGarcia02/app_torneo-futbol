@@ -68,7 +68,7 @@ const Resultados = () => {
     <main className="flex justify-center items-center">
       <div className="bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg max-w-7xl w-full">
         <h2 className="text-green-700 text-2xl font-semibold mb-6 text-center">
-          📊 Resultados de Partidos
+          Resultados de Partidos
         </h2>
 
         <div className="flex flex-col md:flex-row gap-4 mb-4 justify-center">

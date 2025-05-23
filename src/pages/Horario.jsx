@@ -67,11 +67,11 @@ const Horario = () => {
     <main className="flex justify-center items-center">
       <div className="bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg max-w-5xl w-full">
         <h2 className="text-blue-700 text-2xl font-semibold mb-6 text-center">
-          🕒 Horario de Partidos
+          Horario de Partidos
         </h2>
 
         {/* Filtros */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6 justify-center">
+        <div className="hidden xs:flex flex-col md:flex-row gap-4 mb-6 justify-center">
           <input
             type="date"
             value={fechaFiltro}
