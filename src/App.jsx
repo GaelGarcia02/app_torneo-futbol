@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/navbar";
 import Horario from "./pages/Horario";
 import Reservas from "./pages/Reservas";
 import Resultados from "./pages/Resultados";
@@ -11,7 +11,7 @@ const App = () => {
     <Router>
       <header className="bg-blue-700 text-white p-4 text-center">
         <h1 className="text-xl md:text-3xl font-bold">
-          Mundial Escolar de Fútbol
+          Torneo Escolar de Fútbol
         </h1>
       </header>
       <Navbar />
